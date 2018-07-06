@@ -460,16 +460,19 @@ class BuildEnvironment(object):
                 if not path.isfile(self.doc2path(docname, self.doctreedir,
                                                  '.doctree')):
                     changed.add(docname)
+                    logger.info("{} changed: doctree file missing ({})".format(docname, self.doc2path(docname, self.doctreedir, '.doctree')))
                     continue
                 # check the "reread always" list
                 if docname in self.reread_always:
                     changed.add(docname)
+                    logger.info("{} changed: reread always".format(docname))
                     continue
                 # check the mtime of the document
                 mtime = self.all_docs[docname]
                 newmtime = path.getmtime(self.doc2path(docname))
                 if newmtime > mtime:
                     changed.add(docname)
+                    logger.info("{} changed: newmtime > old mtime ({} > {})".format(docname, newmtime, mtime))
                     continue
                 # finally, check the mtime of dependencies
                 for dep in self.dependencies[docname]:
@@ -478,14 +481,17 @@ class BuildEnvironment(object):
                         deppath = path.join(self.srcdir, dep)
                         if not path.isfile(deppath):
                             changed.add(docname)
+                            logger.info("{} changed: dep {} does not exist".format(docname, deppath))
                             break
                         depmtime = path.getmtime(deppath)
                         if depmtime > mtime:
                             changed.add(docname)
+                            logger.info("{} changed: dep {} is newer than it ({} > {})".format(docname, deppath, depmtime, mtime))
                             break
                     except EnvironmentError:
                         # give it another chance
                         changed.add(docname)
+                        logger.info("{} changed: environment error".format(docname))
                         break
 
         return added, changed, removed
