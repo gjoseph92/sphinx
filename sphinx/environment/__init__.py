@@ -494,6 +494,9 @@ class BuildEnvironment(object):
                         logger.info("{} changed: environment error".format(docname))
                         break
 
+        logger.info("added: {}".format(added))
+        logger.info("changed: {}".format(changed))
+        logger.info("removed: {}".format(removed))
         return added, changed, removed
 
     def update(self, config, srcdir, doctreedir):
